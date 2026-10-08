@@ -1,0 +1,41 @@
+const winston = require('winston');
+
+const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.errors({ stack: true }),
+    process.env.NODE_ENV === 'production'
+      ? winston.format.json()
+      : winston.format.combine(
+          winston.format.colorize(),
+          winston.format.printf(({ timestamp, level, message, stack }) =>
+            stack
+              ? `${timestamp} ${level}: ${message}\n${stack}`
+              : `${timestamp} ${level}: ${message}`
+          )
+        )
+  ),
+  transports: [
+    new winston.transports.Console(),
+    ...(process.env.NODE_ENV === 'production'
+      ? [
+          new winston.transports.File({
+            filename: 'logs/error.log',
+            level: 'error',
+            maxsize: 10 * 1024 * 1024,  // 10 MB
+            maxFiles: 5,
+            tailable: true,
+          }),
+          new winston.transports.File({
+            filename: 'logs/combined.log',
+            maxsize: 20 * 1024 * 1024,  // 20 MB
+            maxFiles: 10,
+            tailable: true,
+          }),
+        ]
+      : []),
+  ],
+});
+
+module.exports = logger;

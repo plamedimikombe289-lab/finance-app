@@ -1,0 +1,26 @@
+# Node / JS
+node_modules/
+**/node_modules/
+frontend/dist/
+backend/uploads/
+coverage/
+*.log
+npm-debug.log*
+.vite/
+
+# Env files
+.env
+.env.*
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Build artifacts
+build/
+dist/
+*.local
